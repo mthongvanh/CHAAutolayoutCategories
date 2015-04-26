@@ -14,6 +14,7 @@
 		4C0DEEDE1AEBFDB1004C6398 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C0DEEDD1AEBFDB1004C6398 /* Images.xcassets */; };
 		4C0DEEE11AEBFDB1004C6398 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C0DEEDF1AEBFDB1004C6398 /* LaunchScreen.xib */; };
 		4C0DEEED1AEBFDB1004C6398 /* CHAAutolayoutCategoriesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0DEEEC1AEBFDB1004C6398 /* CHAAutolayoutCategoriesTests.m */; };
+		4C0DEEF91AEBFDC7004C6398 /* UIView+AutoLayoutHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0DEEF81AEBFDC7004C6398 /* UIView+AutoLayoutHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		4C0DEEE61AEBFDB1004C6398 /* CHAAutolayoutCategoriesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CHAAutolayoutCategoriesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C0DEEEB1AEBFDB1004C6398 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C0DEEEC1AEBFDB1004C6398 /* CHAAutolayoutCategoriesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CHAAutolayoutCategoriesTests.m; sourceTree = "<group>"; };
+		4C0DEEF71AEBFDC7004C6398 /* UIView+AutoLayoutHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+AutoLayoutHelper.h"; sourceTree = "<group>"; };
+		4C0DEEF81AEBFDC7004C6398 /* UIView+AutoLayoutHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+AutoLayoutHelper.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +84,7 @@
 		4C0DEECF1AEBFDB1004C6398 /* CHAAutolayoutCategories */ = {
 			isa = PBXGroup;
 			children = (
+				4C0DEEF61AEBFDC7004C6398 /* Auto Layout Helper */,
 				4C0DEED41AEBFDB1004C6398 /* AppDelegate.h */,
 				4C0DEED51AEBFDB1004C6398 /* AppDelegate.m */,
 				4C0DEED71AEBFDB1004C6398 /* ViewController.h */,
@@ -117,6 +121,15 @@
 				4C0DEEEB1AEBFDB1004C6398 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4C0DEEF61AEBFDC7004C6398 /* Auto Layout Helper */ = {
+			isa = PBXGroup;
+			children = (
+				4C0DEEF71AEBFDC7004C6398 /* UIView+AutoLayoutHelper.h */,
+				4C0DEEF81AEBFDC7004C6398 /* UIView+AutoLayoutHelper.m */,
+			);
+			path = "Auto Layout Helper";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -222,6 +235,7 @@
 				4C0DEED91AEBFDB1004C6398 /* ViewController.m in Sources */,
 				4C0DEED61AEBFDB1004C6398 /* AppDelegate.m in Sources */,
 				4C0DEED31AEBFDB1004C6398 /* main.m in Sources */,
+				4C0DEEF91AEBFDC7004C6398 /* UIView+AutoLayoutHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
