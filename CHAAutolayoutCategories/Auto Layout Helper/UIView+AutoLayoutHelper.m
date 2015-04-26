@@ -12,40 +12,47 @@
 
 - (NSLayoutConstraint *)pinLeading
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinLeading:0];
 }
 
 - (NSLayoutConstraint *)pinLeading:(CGFloat)constant
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinSide:NSLayoutAttributeLeading constant:constant];
 }
 
 
 - (NSLayoutConstraint *)pinTrailing
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinTrailing:0];
 }
 
 - (NSLayoutConstraint *)pinTrailing:(CGFloat)constant
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinSide:NSLayoutAttributeTrailing constant:constant];
 }
 
 
 - (NSArray *)pinLeadingTrailing
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinLeadingTrailing:0];
 }
 
 - (NSArray *)pinLeadingTrailing:(CGFloat)constant
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return @[[self pinLeading:constant],
              [self pinTrailing:-constant]];
 }
 
 - (NSLayoutConstraint *)pinToTopLayoutGuide:(UIViewController *)containerViewController
 {
-    if (!containerViewController) return nil;
+    NSAssert([containerViewController isKindOfClass:[UIViewController class]], @"Container View must be a view controller.");
+    if (!containerViewController.topLayoutGuide) return nil;
     
     NSLayoutConstraint *topLayoutGuide = [NSLayoutConstraint
                                           constraintWithItem:self
@@ -60,12 +67,20 @@
 
 - (NSLayoutConstraint *)pinToTopSuperview
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinSide:NSLayoutAttributeTop constant:0];
+}
+
+- (NSLayoutConstraint *)pinToTopSuperview:(CGFloat)constant
+{
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self pinSide:NSLayoutAttributeTop constant:constant];
 }
 
 - (NSLayoutConstraint *)pinToBottomLayoutGuide:(UIViewController *)containerViewController
 {
-    if (!containerViewController) return nil;
+    NSAssert([containerViewController isKindOfClass:[UIViewController class]], @"Container View must be a view controller.");
+    if (!containerViewController.bottomLayoutGuide) return nil;
     
     NSLayoutConstraint *topLayoutGuide = [NSLayoutConstraint
                                           constraintWithItem:self
@@ -81,24 +96,34 @@
 
 - (NSLayoutConstraint *)pinToBottomSuperview
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self pinSide:NSLayoutAttributeBottom constant:0];
+}
+
+- (NSLayoutConstraint *)pinToBottomSuperview:(CGFloat)constant
+{
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self pinSide:NSLayoutAttributeBaseline constant:constant];
 }
 
 - (NSArray *)pinToSuperviewBounds
 {
-    return [self pinToSuperviewBounds:0];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self pinToSuperviewBoundsConstant:0];
 }
 
-- (NSArray *)pinToSuperviewBounds:(CGFloat)constant
+- (NSArray *)pinToSuperviewBoundsConstant:(CGFloat)constant
 {
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     NSMutableArray *constraints = [NSMutableArray array];
     
-    NSArray *constraintTypes = @[[NSNumber numberWithInteger:NSLayoutAttributeTop],
-                                 [NSNumber numberWithInteger:NSLayoutAttributeBottom],
-                                 [NSNumber numberWithInteger:NSLayoutAttributeLeft],
-                                 [NSNumber numberWithInteger:NSLayoutAttributeRight]];
+    NSArray *constraintTypes = @[@(NSLayoutAttributeTop),
+                                 @(NSLayoutAttributeBottom),
+                                 @(NSLayoutAttributeLeft),
+                                 @(NSLayoutAttributeRight)];
     
-    for (NSNumber *constraintValue in constraintTypes) {
+    for (NSNumber *constraintValue in constraintTypes)
+    {
         NSLayoutConstraint *constraint = [NSLayoutConstraint
                                           constraintWithItem:self
                                           attribute:constraintValue.integerValue
@@ -112,6 +137,33 @@
     return constraints;
 }
 
+- (NSArray *)pinToSuperviewBoundsInsets:(UIEdgeInsets)edgeInsets
+{
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    
+    NSLayoutConstraint *topEdge = [self pinToTopSuperview:edgeInsets.top];
+    NSLayoutConstraint *bottomEdge = [self pinToBottomSuperview:edgeInsets.bottom];
+    NSLayoutConstraint *leftEdge = [self pinLeading:edgeInsets.left];
+    NSLayoutConstraint *rightEdge = [self pinTrailing:edgeInsets.right];
+    
+    return @[topEdge,bottomEdge,leftEdge,rightEdge];
+}
+
+- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide constant:(CGFloat)constant
+{
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    
+    return [self pin:self side:viewSide toView:self.superview secondSide:viewSide constant:constant multiplier:1];
+}
+
+- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
+                         toView:(UIView *)secondView
+                 secondViewSide:(NSLayoutAttribute)secondViewSide
+{
+    NSAssert(secondView != nil, @"No second view provided. Please provide a reference view on which to pin a first view.");
+    return [self pin:self side:viewSide toView:secondView secondSide:secondViewSide constant:0 multiplier:1];
+}
+
 - (NSLayoutConstraint *)pin:(UIView *)firstView
                        side:(NSLayoutAttribute)viewSide
                      toView:(UIView *)secondView
@@ -119,8 +171,8 @@
                    constant:(CGFloat)constant
                  multiplier:(CGFloat)multiplier
 {
-    if (!firstView) return nil;
-    if (!secondView) return nil;
+    NSAssert(firstView != nil, @"No first view provided. Please provide a view to pin.");
+    NSAssert(secondView != nil, @"No second view provided. Please provide a reference view on which to pin a first view.");
     
     NSLayoutConstraint *pinningConstraint = [NSLayoutConstraint
                                              constraintWithItem:firstView
@@ -133,85 +185,67 @@
     return pinningConstraint;
 }
 
-- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide constant:(CGFloat)constant
-{
-    if (!self.superview) return nil;
-    
-    return [self pin:self side:viewSide toView:self.superview secondSide:viewSide constant:constant multiplier:1];
-}
-
-- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
-                         toView:(UIView *)secondView
-                 secondViewSide:(NSLayoutAttribute)secondViewSide
-{
-    return [self pin:self side:viewSide toView:secondView secondSide:secondViewSide constant:0 multiplier:1];
-}
-
 #pragma mark - Alignment
-- (NSLayoutConstraint *)alignCenterHorizontalSuperview
-{
-    if (!self.superview) return nil;
-    return [[self alignCenterHorizontal:@[self] referenceView:self.superview] firstObject];
-}
-
 - (NSLayoutConstraint *)alignCenterVerticalSuperview
 {
-    if (!self.superview) return nil;
-    return [[self alignCenterVertical:@[self] referenceView:self.superview] firstObject];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [[self alignCenterVertical:@[self]
+                        referenceView:self.superview] firstObject];
+}
+
+- (NSLayoutConstraint *)alignCenterHorizontalSuperview
+{
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [[self alignCenterHorizontal:@[self]
+                          referenceView:self.superview] firstObject];
 }
 
 - (NSLayoutConstraint *)alignLeftSuperview
 {
-    if (!self.superview) return nil;
-    return [self align:self side:NSLayoutAttributeLeft constant:0];
-    
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self alignSide:NSLayoutAttributeLeft constant:0];
 }
 
 - (NSLayoutConstraint *)alignRightSuperview
 {
-    if (!self.superview) return nil;
-    return [self align:self side:NSLayoutAttributeRight constant:0];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self alignSide:NSLayoutAttributeRight constant:0];
 }
 
 - (NSLayoutConstraint *)alignTopSuperview
 {
-    if (!self.superview) return nil;
-    return [self align:self side:NSLayoutAttributeTop constant:0];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self alignSide:NSLayoutAttributeTop constant:0];
 }
 
 - (NSLayoutConstraint *)alignTopLayoutGuide:(UIViewController *)containerViewController
 {
-    if (!containerViewController) return nil;
+    NSAssert([containerViewController isKindOfClass:[UIViewController class]], @"Container View must be a view controller.");
+    if (!containerViewController.topLayoutGuide) return nil;
     
-    return [self align:self
-                  side:NSLayoutAttributeTop
-                toView:containerViewController.topLayoutGuide
-            secondSide:NSLayoutAttributeBottom
-              constant:0
-            multiplier:1];
+    return [self pinToTopLayoutGuide:containerViewController];
 }
 
 - (NSLayoutConstraint *)alignBottomSuperview
 {
-    if (!self.superview) return nil;
-    return [self align:self side:NSLayoutAttributeBottom constant:0];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self alignSide:NSLayoutAttributeBottom constant:0];
 }
 
 - (NSLayoutConstraint *)alignBottomLayoutGuide:(UIViewController *)containerViewController
 {
-    if (!containerViewController) return nil;
+    NSAssert([containerViewController isKindOfClass:[UIViewController class]], @"Container View must be a view controller.");
+    if (!containerViewController.bottomLayoutGuide) return nil;
     
-    return [self align:self
-                  side:NSLayoutAttributeTop
-                toView:containerViewController.bottomLayoutGuide
-            secondSide:NSLayoutAttributeTop
-              constant:0
-            multiplier:1];
+    return [self pinToBottomLayoutGuide:containerViewController];
 }
 
 - (NSArray *)alignCenterHorizontal:(NSArray *)viewsForCenterHorizontalAlignment
                      referenceView:(UIView *)referenceView
 {
+    NSAssert(viewsForCenterHorizontalAlignment.count > 0, @"No views provided for horizontal center alignment.");
+    NSAssert(referenceView != nil, @"No reference view found. Please provide a reference view.");
+    
     return [self alignCenter:NSLayoutAttributeCenterX
                        views:viewsForCenterHorizontalAlignment
                referenceView:referenceView];
@@ -220,6 +254,9 @@
 - (NSArray *)alignCenterVertical:(NSArray *)viewsForCenterVerticalAlignment
                    referenceView:(UIView *)referenceView
 {
+    NSAssert(viewsForCenterVerticalAlignment.count > 0, @"No views provided for vertical center alignment.");
+    NSAssert(referenceView != nil, @"No reference view found. Please provide a reference view.");
+    
     return [self alignCenter:NSLayoutAttributeCenterY
                        views:viewsForCenterVerticalAlignment
                referenceView:referenceView];
@@ -229,9 +266,13 @@
               views:(NSArray *)viewsForAlignment
       referenceView:(UIView *)referenceView
 {
+    NSAssert(viewsForAlignment.count > 0, @"No views provided for center alignment.");
+    NSAssert(referenceView != nil, @"No reference view found. Please provide a reference view.");
+    
     NSMutableArray *constraints = [NSMutableArray array];
     
-    for (UIView *alignmentView in viewsForAlignment) {
+    for (UIView *alignmentView in viewsForAlignment)
+    {
         if ([alignmentView isEqual:referenceView]) return nil;
         
         NSLayoutConstraint *alignCenter = [NSLayoutConstraint
@@ -248,11 +289,26 @@
     return constraints;
 }
 
-- (NSLayoutConstraint *)align:(UIView *)firstView
-                         side:(NSLayoutAttribute)firstSide
-                     constant:(CGFloat)constant
+- (NSLayoutConstraint *)alignSide:(NSLayoutAttribute)firstSide
+                         constant:(CGFloat)constant
 {
-    return [self pin:firstView side:firstSide toView:firstView.superview secondSide:firstSide constant:constant multiplier:1];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [self pinSide:firstSide constant:constant];
+}
+
+- (NSLayoutConstraint *)alignSide:(NSLayoutAttribute)firstSide
+                           toView:(UIView *)secondView
+                       secondSide:(NSLayoutAttribute)secondViewSide
+                         constant:(CGFloat)constant
+{
+    NSAssert(secondView != nil, @"No Second view provided. Please provide a second view on which to pin the receiving view.");
+
+    return [self align:self
+                  side:firstSide
+                toView:secondView
+            secondSide:secondViewSide
+              constant:constant
+            multiplier:1];
 }
 
 - (NSLayoutConstraint *)align:(UIView *)firstView
@@ -262,6 +318,9 @@
                      constant:(CGFloat)constant
                    multiplier:(CGFloat)multiplier
 {
+    NSAssert(firstView != nil, @"No first view provided. Please provide a view to pin.");
+    NSAssert(secondView != nil, @"No second view provided. Please provide a reference view on which to pin a first view.");
+    
     return [self pin:firstView
                 side:firstSide
               toView:secondView
@@ -271,18 +330,6 @@
 }
 
 #pragma mark - Width and Height
-- (NSLayoutConstraint *)height:(CGFloat)constant
-{
-    return [NSLayoutConstraint
-            constraintWithItem:self
-            attribute:NSLayoutAttributeHeight
-            relatedBy:NSLayoutRelationEqual
-            toItem:nil
-            attribute:NSLayoutAttributeNotAnAttribute
-            multiplier:1
-            constant:constant];
-}
-
 - (NSLayoutConstraint *)width:(CGFloat)constant
 {
     return [NSLayoutConstraint
@@ -295,41 +342,147 @@
             constant:constant];
 }
 
+- (NSLayoutConstraint *)width:(NSLayoutRelation)constraintRelation
+                     constant:(CGFloat)constant
+{
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeWidth
+            relatedBy:constraintRelation
+            toItem:nil
+            attribute:NSLayoutAttributeNotAnAttribute
+            multiplier:1
+            constant:constant];
+}
+
+- (NSLayoutConstraint *)height:(CGFloat)constant
+{
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeHeight
+            relatedBy:NSLayoutRelationEqual
+            toItem:nil
+            attribute:NSLayoutAttributeNotAnAttribute
+            multiplier:1
+            constant:constant];
+}
+
+- (NSLayoutConstraint *)height:(NSLayoutRelation)constraintRelation
+                      constant:(CGFloat)constant
+{
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeHeight
+            relatedBy:constraintRelation
+            toItem:nil
+            attribute:NSLayoutAttributeNotAnAttribute
+            multiplier:1
+            constant:constant];
+}
+
 - (NSLayoutConstraint *)equalWidth
 {
-    if (!self.superview) return nil;
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self equalWidth:1];
 }
 
 - (NSLayoutConstraint *)equalWidth:(CGFloat)multiplier
 {
-    if (!self.superview) return nil;
-    return [[self equalWidths:@[self] referenceView:self.superview multiplier:multiplier] firstObject];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [[self equalWidths:@[self]
+                referenceView:self.superview
+                   multiplier:multiplier] firstObject];
+}
+
+- (NSLayoutConstraint *)equalWidthToView:(UIView *)secondView
+{
+    NSAssert(secondView != nil, @"No Second view provided. Please provide a second view on which to pin the receiving view.");
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeWidth
+            relatedBy:NSLayoutRelationEqual
+            toItem:secondView
+            attribute:NSLayoutAttributeWidth
+            multiplier:1
+            constant:0];
+}
+
+- (NSLayoutConstraint *)equalWidthToView:(UIView *)secondView
+                              multiplier:(CGFloat)multiplier
+{
+    NSAssert(secondView != nil, @"No Second view provided. Please provide a second view on which to pin the receiving view.");
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeWidth
+            relatedBy:NSLayoutRelationEqual
+            toItem:secondView
+            attribute:NSLayoutAttributeWidth
+            multiplier:multiplier
+            constant:0];
 }
 
 - (NSLayoutConstraint *)equalHeight
 {
-    if (!self.superview) return nil;
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [self equalHeight:1];
 }
 
 - (NSLayoutConstraint *)equalHeight:(CGFloat)multiplier
 {
-    if (!self.superview) return nil;
-    return [[self equalHeights:@[self] referenceView:self.superview multiplier:multiplier] firstObject];
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
+    return [[self equalHeights:@[self]
+                 referenceView:self.superview
+                    multiplier:multiplier]
+            firstObject];
+}
+
+- (NSLayoutConstraint *)equalHeightToView:(UIView *)secondView
+{
+    NSAssert(secondView != nil, @"No Second view provided. Please provide a second view on which to pin the receiving view.");
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeHeight
+            relatedBy:NSLayoutRelationEqual
+            toItem:secondView
+            attribute:NSLayoutAttributeHeight
+            multiplier:1
+            constant:0];
+}
+
+- (NSLayoutConstraint *)equalHeightToView:(UIView *)secondView
+                               multiplier:(CGFloat)multiplier
+{
+    NSAssert(secondView != nil, @"No Second view provided. Please provide a second view on which to pin the receiving view.");
+    return [NSLayoutConstraint
+            constraintWithItem:self
+            attribute:NSLayoutAttributeHeight
+            relatedBy:NSLayoutRelationEqual
+            toItem:secondView
+            attribute:NSLayoutAttributeHeight
+            multiplier:multiplier
+            constant:0];
+}
+
+- (NSArray *)equalWidths:(NSArray *)viewsForAlignment
+              multiplier:(CGFloat)multiplier
+{
+    NSAssert(viewsForAlignment.count > 0, @"No second view provided to create equal width constraint.");
+    return [self equalWidths:viewsForAlignment referenceView:self multiplier:multiplier];
 }
 
 - (NSArray *)equalWidths:(NSArray *)viewsForAlignment
            referenceView:(UIView *)referenceView
               multiplier:(CGFloat)multiplier
 {
-    if (viewsForAlignment.count == 0) return nil;
-    if (!referenceView) return nil;
+    NSAssert(viewsForAlignment.count > 0, @"No views provided for center alignment.");
+    NSAssert(referenceView != nil, @"No reference view found. Please provide a reference view.");
     
     NSMutableArray *constraints = [NSMutableArray array];
     
-    for (UIView *alignmentView in viewsForAlignment) {
-        if (![alignmentView isEqual:referenceView]) {
+    for (UIView *alignmentView in viewsForAlignment)
+    {
+        if (![alignmentView isEqual:referenceView])
+        {
             NSLayoutConstraint *dimensionConstraint =
             [NSLayoutConstraint constraintWithItem:alignmentView
                                          attribute:NSLayoutAttributeWidth
@@ -346,17 +499,25 @@
     return constraints;
 }
 
+- (NSArray *)equalHeights:(NSArray *)viewsForAlignment multiplier:(CGFloat)multiplier
+{
+    NSAssert(viewsForAlignment.count > 0, @"No second view provided to create equal height constraint.");
+    return [self equalHeights:viewsForAlignment referenceView:self multiplier:multiplier];
+}
+
 - (NSArray *)equalHeights:(NSArray *)viewsForAlignment
             referenceView:(UIView *)referenceView
                multiplier:(CGFloat)multiplier
 {
-    if (viewsForAlignment.count == 0) return nil;
-    if (!referenceView) return nil;
+    NSAssert(viewsForAlignment.count > 0, @"No views provided for center alignment.");
+    NSAssert(referenceView != nil, @"No reference view found. Please provide a reference view.");
  
     NSMutableArray *constraints = [NSMutableArray array];
     
-    for (UIView *alignmentView in viewsForAlignment) {
-        if (![alignmentView isEqual:referenceView]) {
+    for (UIView *alignmentView in viewsForAlignment)
+    {
+        if (![alignmentView isEqual:referenceView])
+        {
             NSLayoutConstraint *dimensionConstraint =
             [NSLayoutConstraint constraintWithItem:alignmentView
                                          attribute:NSLayoutAttributeHeight
@@ -375,21 +536,53 @@
 
 - (NSLayoutConstraint *)proportionalWidth
 {
-    if (!self.superview) return nil;
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [[self equalWidths:@[self]
                 referenceView:self.superview
-                   multiplier:(self.bounds.size.width/self.superview.bounds.size.width)]
+                   multiplier:(MAX(1,self.bounds.size.width))/(MAX(1,self.superview.bounds.size.width))]
             firstObject];
     
 }
 
+- (NSLayoutConstraint *)proportionalWidthForHeight:(CGFloat)height
+{
+    NSAssert(height >= 1, @"Height must be greater than or equal to 1");
+    
+    NSLayoutConstraint *proportionalWidth = [NSLayoutConstraint
+                                             constraintWithItem:self
+                                             attribute:NSLayoutAttributeHeight
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:self
+                                             attribute:NSLayoutAttributeWidth
+                                             multiplier:(height/MAX(1,self.bounds.size.width))
+                                             constant:0];
+    
+    return proportionalWidth;
+}
+
 - (NSLayoutConstraint *)proportionalHeight
 {
-    if (!self.superview) return nil;
+    NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
     return [[self equalHeights:@[self]
                  referenceView:self.superview
-                    multiplier:(self.bounds.size.height/self.superview.bounds.size.height)]
+                    multiplier:(MAX(1,self.bounds.size.width))/(MAX(1,self.superview.bounds.size.width))]
             firstObject];
+}
+
+- (NSLayoutConstraint *)proportionalHeightForWidth:(CGFloat)width
+{
+    NSAssert(width >= 1, @"Width must be greater than or equal to 1");
+    
+    NSLayoutConstraint *proportionalHeight = [NSLayoutConstraint
+                                             constraintWithItem:self
+                                             attribute:NSLayoutAttributeHeight
+                                             relatedBy:NSLayoutRelationEqual
+                                             toItem:self
+                                             attribute:NSLayoutAttributeWidth
+                                             multiplier:(MAX(1,self.bounds.size.height)/width)
+                                             constant:0];
+    
+    return proportionalHeight;
 }
 
 - (NSLayoutConstraint *)aspectRatio
@@ -407,8 +600,13 @@
 
 
 #pragma mark - Constraint Removal
-+ (void)removeSuperviewConstraintsForViews:(NSArray *)views
+- (void)removeSuperviewConstraintsForViews:(NSArray *)views
 {
+    for (id view in views)
+    {
+        NSAssert([view isKindOfClass:[UIView class]], @"Invalid object type provided. Only view objects should be provided");
+    }
+    
     [views enumerateObjectsUsingBlock:^(UIView *mainView, NSUInteger idx, BOOL *stop)
     {
         NSArray *constraints = [mainView.superview constraints];
