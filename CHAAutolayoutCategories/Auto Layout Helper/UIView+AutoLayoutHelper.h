@@ -109,6 +109,26 @@
 - (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
                        constant:(CGFloat)constant;
 /**
+ @description Pin the receiving view's edge to the superview's corresponding edge
+ @param viewSide An intended view's NSLayoutAttribute to be lined up with the superview's
+ @param layoutRelation The relationship between the actual value and the constant
+ @param constant CGFloat representation of the distance between the intended view's NSLayoutAttribute and the superview's NSLayoutAttribute
+ @return A constraint item that relates the receiving view's NSLayoutAttribute with the superview's NSLayoutAttribute
+ */
+- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
+                       relation:(NSLayoutRelation)layoutRelation
+                       constant:(CGFloat)constant;
+
+/**
+ @description Pin the receiving view's edges equally to the superview's corresponding edges
+ @param viewSides An array of NSLayoutAttribute's as NSNumbers 
+ @param constant CGFloat representation of the distance between the intended view's NSLayoutAttribute's and the superview's NSLayoutAttribute's
+ @return An array of constraint items that relates the receiving view's NSLayoutAttribute's with the superview's NSLayoutAttribute's
+ */
+- (NSArray *)pinSides:(NSArray *)viewSides
+             constant:(CGFloat)constant;
+
+/**
  @description Pin the receiving view's NSLayoutAttribute to second view's selected NSLayoutAttribute
  @param viewSide The receiving view's NSLayoutAttribute to pin to a second view
  @param secondView The second view to which the receiving view will be pinned
@@ -118,7 +138,18 @@
 - (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
                          toView:(UIView *)secondView
                  secondViewSide:(NSLayoutAttribute)secondViewSide;
-
+/**
+ @description Pin the receiving view's NSLayoutAttribute to second view's selected NSLayoutAttribute
+ @param viewSide The receiving view's NSLayoutAttribute to pin to a second view
+ @param secondView The second view to which the receiving view will be pinned
+ @param secondViewSide The second view's NSLayoutAttribute to which the receiving view's NSLayoutAttribute will be pinned
+ @param constant CGFloat representation of a constant distance between the views's two sides
+ @return A constraint item that relates the receiving view's NSLayoutAttribute with the second view's NSLayoutAttribute
+ */
+- (NSLayoutConstraint *)pinSide:(NSLayoutAttribute)viewSide
+                         toView:(UIView *)secondView
+                 secondViewSide:(NSLayoutAttribute)secondViewSide
+                       constant:(CGFloat)constant;
 /**
  @description A proxy method to pin any view's NSLayoutAttribute to a second view's NSLayoutAttribute
  @param firstView A view to pin to a second view
@@ -249,7 +280,16 @@
  @param constant CGFloat representation of a constant width in points for a view
  @return A constraint item defining a view's constant width in points
  */
-- (NSLayoutConstraint *)width:(NSLayoutRelation)constraintRelation constant:(CGFloat)constant;
+- (NSLayoutConstraint *)width:(NSLayoutRelation)constraintRelation
+                     constant:(CGFloat)constant;
+/**
+ @description Set a equal-to or greater/less-than width for a view
+ @param constraintRelation NSLayoutRelation that specifies a equal-to, greater-than, or less-than relationship to a multiplier value
+ @param constant CGFloat representation of a percent-based width for a view
+ @return A constraint item defining a view's percent-based width
+ */
+- (NSLayoutConstraint *)width:(NSLayoutRelation)constraintRelation
+                   multiplier:(CGFloat)multiplier;
 /**
  @description Set a constant height for a view
  @param constant CGFloat representation of a constant height in points for a view
@@ -263,6 +303,13 @@
  @return A constraint item defining a view's constant height in points
  */
 - (NSLayoutConstraint *)height:(NSLayoutRelation)constraintRelation constant:(CGFloat)constant;
+/**
+ @description Set a equal-to or greater/less-than height for a view
+ @param constraintRelation NSLayoutRelation that specifies a equal-to, greater-than, or less-than relationship to a multiplier value
+ @param constant CGFloat representation of a percent-based height for a view
+ @return A constraint item defining a view's percent-based height
+ */
+- (NSLayoutConstraint *)height:(NSLayoutRelation)constraintRelation multiplier:(CGFloat)multiplier;
 
 /**
  @description Set the receiving view's width equal to its superview's width
