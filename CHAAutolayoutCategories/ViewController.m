@@ -59,15 +59,8 @@ const CGFloat defaultMargin = 10.f;
 
 - (void)updateConstraints
 {
-    if (!self.laidOutConstraints)
-    {
-        self.laidOutConstraints = true;
-        [self setupConstraints];
-    }
-    else
-    {
-        [self modifyConstraints];
-    }
+    [self setupConstraints];
+
     [super updateConstraints];
 }
 
@@ -87,25 +80,15 @@ const CGFloat defaultMargin = 10.f;
 
 - (NSArray *)profilePictureConstraints
 {
-    NSMutableArray *profileConstraints = [NSMutableArray new];
     NSLayoutConstraint *leading = [self.profilePicture pinLeading:defaultMargin];
-    [profileConstraints addObject:leading];
-    
     NSLayoutConstraint *centerY = [self.profilePicture alignCenterVerticalSuperview];
-    [profileConstraints addObject:centerY];
-    
     NSLayoutConstraint *aspectRatio = [self.profilePicture aspectRatio];
-    [profileConstraints addObject:aspectRatio];
-    
     NSLayoutConstraint *heightMax = [self.profilePicture height:NSLayoutRelationEqual multiplier:0.35f];
-    [profileConstraints addObject:heightMax];
-    
     NSLayoutConstraint *top = [self.profilePicture pinSide:NSLayoutAttributeTop
                                                   relation:NSLayoutRelationGreaterThanOrEqual
                                                   constant:10.f];
-    [profileConstraints addObject:top];
     
-    return profileConstraints;
+    return @[leading,centerY,aspectRatio,heightMax,top];
 }
 
 - (NSArray *)userDetailsContainerConstraints
