@@ -713,6 +713,39 @@
 }
 
 
+#pragma mark - View Grouping
+- (NSArray *)stackAboveView:(UIView *)bottomView
+{
+    return [self stackAboveView:bottomView superviewMargin:0 interViewSpacing:0];
+}
+
+- (NSArray *)stackAboveView:(UIView *)bottomView
+            superviewMargin:(CGFloat)outerEdgeMargin
+           interViewSpacing:(CGFloat)viewMargin
+{
+    NSAssert(bottomView != nil, @"No bottom view provided. Please provide a lower view");
+    
+    NSArray *pinTopView = [self pinSides:@[@(NSLayoutAttributeTop),@(NSLayoutAttributeLeading),@(NSLayoutAttributeTrailing)]
+                                constant:outerEdgeMargin];
+    
+    NSArray *pinBottomView = [bottomView pinSides:@[@(NSLayoutAttributeBottom),@(NSLayoutAttributeLeading),@(NSLayoutAttributeTrailing)]
+                                         constant:outerEdgeMargin];
+    
+    NSLayoutConstraint *interViewSpace = [NSLayoutConstraint constraintWithItem:self
+                                                                      attribute:NSLayoutAttributeBottom
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:bottomView
+                                                                      attribute:NSLayoutAttributeTop
+                                                                     multiplier:1
+                                                                       constant:viewMargin];
+    
+    NSArray *constraints = [NSArray arrayWithArray:pinTopView];
+    constraints = [constraints arrayByAddingObjectsFromArray:pinBottomView];
+    constraints = [constraints arrayByAddingObject:interViewSpace];
+    
+    return constraints;
+}
+
 #pragma mark - Constraint Removal
 - (void)removeSuperviewConstraintsForViews:(NSArray *)views
 {

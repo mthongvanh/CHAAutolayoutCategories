@@ -391,10 +391,39 @@
 - (NSLayoutConstraint *)proportionalHeightForWidth:(CGFloat)width;
 /**
  @description Set a relationship between a view's width and height
- @return A constraint item tha relates a view's width and height
+ @return A constraint item that relates a view's width and height
  */
 - (NSLayoutConstraint *)aspectRatio;
 
+#pragma mark - View Grouping
+/**
+ @description Stack two views vertically in a superview with margins of 0
+ @param topView The upper view
+ @param bottomView The lower view
+ @return An array of constraints that represents two views stacked vertically
+ */
+- (NSArray *)stackAboveView:(UIView *)bottomView;
+
+/**
+ @description Stack two views vertically in a superview
+ @param topView The upper view
+ @param bottomView The lower view
+ @param outerEdgeMargin A CGFloat that represents the margin between the views and the superview
+ @param viewMargin A CGFloat that represents the distance between the two views
+ @return An array of constraints that represents two views stacked vertically
+ */
+- (NSArray *)stackAboveView:(UIView *)bottomView
+            superviewMargin:(CGFloat)outerEdgeMargin
+           interViewSpacing:(CGFloat)viewMargin;
+
+
+
+
+
+
+
+
+#pragma mark - Remove Superviews
 /**
  @description Remove constraints from the receiving view's superview for a collection of views
  @param views A collection of views whose constraints should be removed from the recipient's superviews
