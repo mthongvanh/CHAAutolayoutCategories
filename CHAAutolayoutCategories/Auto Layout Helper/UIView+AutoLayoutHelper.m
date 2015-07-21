@@ -32,7 +32,7 @@
 - (NSLayoutConstraint *)pinTrailing:(CGFloat)constant
 {
     NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
-    return [self pinSide:NSLayoutAttributeTrailing constant:constant];
+    return [self pinSide:NSLayoutAttributeTrailing constant:-constant];
 }
 
 
@@ -103,7 +103,7 @@
 - (NSLayoutConstraint *)pinToBottomSuperview:(CGFloat)constant
 {
     NSAssert(self.superview != nil, @"Superview not found. The receiving view must already be part of the view hierarchy.");
-    return [self pinSide:NSLayoutAttributeBottom constant:constant];
+    return [self pinSide:NSLayoutAttributeBottom constant:-constant];
 }
 
 - (NSArray *)pinToSuperviewBounds
@@ -124,6 +124,11 @@
     
     for (NSNumber *constraintValue in constraintTypes)
     {
+        if (![constraintValue isEqual:@(NSLayoutAttributeTop)])
+        {
+            constant = -constant;
+        }
+        
         NSLayoutConstraint *constraint = [NSLayoutConstraint
                                           constraintWithItem:self
                                           attribute:constraintValue.integerValue
