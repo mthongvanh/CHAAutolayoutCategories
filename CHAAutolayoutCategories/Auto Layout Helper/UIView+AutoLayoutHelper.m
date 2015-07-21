@@ -196,7 +196,7 @@
             }
             case NSLayoutAttributeBottom:
             {
-                [constraints addObject:[self pinToBottomSuperview:-constant]];
+                [constraints addObject:[self pinToBottomSuperview:constant]];
                 break;
             }
             case NSLayoutAttributeLeft:
@@ -208,7 +208,7 @@
             case NSLayoutAttributeRight:
             case NSLayoutAttributeTrailing:
             {
-                [constraints addObject:[self pinTrailing:-constant]];
+                [constraints addObject:[self pinTrailing:constant]];
                 break;
             }
             default:
